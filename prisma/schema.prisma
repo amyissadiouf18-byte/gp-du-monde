@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TypeCargaison {
+  ROUTIERE
+  MARITIME
+  AERIENNE
+}
+
+enum TypeProduit {
+  ALIMENTAIRE
+  CHIMIQUE
+  MATERIEL_FRAGILE
+  MATERIEL_INCASSABLE
+}
+
+model Cargaison {
+  id        Int           @id @default(autoincrement())
+  type      TypeCargaison
+  distance  Float
+  produits  Produit[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@map("cargaisons")
+}
+
+model Produit {
+  id            Int         @id @default(autoincrement())
+  libelle       String
+  poids         Float
+  type          TypeProduit
+  degreToxicite Int?
+  cargaisonId   Int
+  cargaison     Cargaison   @relation(fields: [cargaisonId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("produits")
+}

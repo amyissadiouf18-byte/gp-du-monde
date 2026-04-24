@@ -1,0 +1,56 @@
+services:
+
+  # ── Base de données PostgreSQL ─────────────────────────────────────────────
+  postgres:
+    image:  amyissadiouf/gp-du-monde:tagname
+    container_name: gp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gp
+      POSTGRES_PASSWORD: amy210322
+      POSTGRES_DB: gp_du_monde
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gp -d gp_du_monde"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ── Application Node.js ────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: gp_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://gp:gp_secret@postgres:5432/gp_du_monde?schema=public
+      PORT: 3000
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── PgAdmin (interface BDD optionnelle) ────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: gp_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@gp.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
