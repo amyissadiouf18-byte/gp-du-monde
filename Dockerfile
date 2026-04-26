@@ -28,7 +28,7 @@ COPY . .
 
 RUN npm run build && \
     npm prune --omit=dev
-
+RUN apt-get update -y && apt-get install -y openssl
 
 # ─────────────────────────────────────────────
 # Stage 3 — Production image
