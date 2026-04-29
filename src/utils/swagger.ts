@@ -122,4 +122,4 @@ const options: swaggerJsdoc.Options = {
   apis: [routesPath],
 };
 
-export const swaggerSpec = swaggerJsdoc(options);
+export const swaggerSpec = swaggerJsdoc(options);git commit -m "fix: swagger lit les .js en production"

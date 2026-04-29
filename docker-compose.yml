@@ -1,8 +1,9 @@
 services:
 
+
   # ── Base de données PostgreSQL ─────────────────────────────────────────────
   postgres:
-    image:  amyissadiouf/gp-du-monde:tagname
+    image:  amyissadiouf/gp-du-monde:gomonde
     container_name: gp_postgres
     restart: unless-stopped
     environment:
