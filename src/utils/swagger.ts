@@ -1,4 +1,13 @@
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
+
+// En production (dist/), on lit les .js compilés
+// En développement, on lit les .ts sources
+const isProd = process.env.NODE_ENV === 'production';
+const ext = isProd ? 'js' : 'ts';
+const routesPath = isProd
+  ? path.join(__dirname, '../routes/*.js')
+  : path.join(__dirname, '../routes/*.ts');
 
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -8,18 +17,15 @@ const options: swaggerJsdoc.Options = {
       version: '1.0.0',
       description:
         'API REST de gestion des cargaisons et produits pour GP du Monde, ' +
-        'une entreprise de transport de colis à l\'échelle mondiale.',
+        "une entreprise de transport de colis à l'échelle mondiale.",
       contact: {
         name: 'GP du Monde',
       },
     },
     servers: [
       {
-        url: 'http://localhost:{port}',
-        description: 'Serveur de développement',
-        variables: {
-          port: { default: '3000' },
-        },
+        url: process.env.RENDER_EXTERNAL_URL ?? `http://localhost:${process.env.PORT ?? 3000}`,
+        description: isProd ? 'Serveur de production' : 'Serveur de développement',
       },
     ],
     components: {
@@ -113,7 +119,7 @@ const options: swaggerJsdoc.Options = {
       },
     },
   },
-  apis: ['./src/routes/*.ts'],
+  apis: [routesPath],
 };
 
 export const swaggerSpec = swaggerJsdoc(options);
